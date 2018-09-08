@@ -50,7 +50,6 @@ const webpackConfig = merge(baseWebpackConfig, {
         vendors: {
           test: /node_modules/,
           name: 'vendors',
-          enforce: true,
           chunks: 'initial'
         }
       }

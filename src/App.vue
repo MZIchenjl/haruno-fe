@@ -15,26 +15,29 @@
         <span class="value text-info">{{ totrun }}</span>
       </span>
     </div>
-    <transition-group tag="ul" id="log-list" name="log-enter">
-      <log-list-item v-for="log in _logs" :key="log.time" v-bind="log" />
+    <transition-group v-if="slicedLogs.length" tag="ul" id="log-list" name="log-enter">
+      <log-list-item  v-for="log in slicedLogs" :key="log.time" v-bind="log" />
     </transition-group>
+    <div v-else>连接中，请稍等...</div>
   </div>
 </template>
 
 <script>
 import LogListItem from './components/log-list-item'
 import moment from 'moment'
+import Axios from 'axios'
 
 export default {
   components: {
     LogListItem
   },
   data () {
+    const now = Date.now()
     return {
       success: 0,
-      now: Date.now(),
+      now: now,
       fails: 0,
-      start: 1531449841287,
+      start: now,
       logs: []
     }
   },
@@ -70,13 +73,28 @@ export default {
       }
       return ret
     },
-    _logs () {
+    slicedLogs () {
       return this.logs.slice(0, 50)
+    }
+  },
+  methods: {
+    getStatus () {
+      Axios.get('/status')
+        .then(res => res.data)
+        .then(res => {
+          this.success = res.success
+          this.start = res.start
+          this.fails = res.fails
+          console.log('Haruno Status')
+          console.log(`go: ${res.go}, version: ${res.version}`)
+        })
+        .catch(err => console.log(err))
     }
   },
   mounted () {
     const status = ['info', 'error', 'success']
     const ws = new WebSocket('ws://demos.kaazing.com/echo')
+    this.getStatus()
     setInterval(() => {
       this.now = Date.now()
     }, 1000)
