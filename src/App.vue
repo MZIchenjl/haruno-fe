@@ -16,7 +16,7 @@
       </span>
     </div>
     <transition-group v-if="slicedLogs.length" tag="ul" id="log-list" name="log-enter">
-      <log-list-item  v-for="log in slicedLogs" :key="log.time" v-bind="log" />
+      <log-list-item v-for="log in slicedLogs" :key="log.time" v-bind="log" />
     </transition-group>
     <div v-else>连接中，请稍等...</div>
   </div>
@@ -78,7 +78,7 @@ export default {
     }
   },
   methods: {
-    getStatus () {
+    getStatus (callback) {
       Axios.get('/status')
         .then(res => res.data)
         .then(res => {
@@ -87,52 +87,51 @@ export default {
           this.fails = res.fails
           console.log('Haruno Status')
           console.log(`go: ${res.go}, version: ${res.version}`)
+          callback && callback()
         })
         .catch(err => console.log(err))
+    },
+    setupWsHandlers () {
+      const status = ['info', 'error', 'success']
+      const ws = new WebSocket(`ws://${location.host}/logs/-/type=websocket`)
+      ws.addEventListener('open', () => {
+        this.logs.unshift({
+          time: Date.now(),
+          type: 'success',
+          text: '远程日志服务连接成功！'
+        })
+      })
+      ws.addEventListener('error', err => {
+        this.logs.unshift({
+          time: Date.now(),
+          type: 'error',
+          text: err.message
+        })
+      })
+      ws.addEventListener('message', event => {
+        const res = JSON.parse(event.data)
+        switch (res.type) {
+          case 1:
+            this.fails++
+            break
+          case 2:
+            this.success++
+            break
+          default:
+            break
+        }
+        res.type = status[res.type]
+        this.logs.unshift(res)
+      })
     }
   },
   mounted () {
-    const status = ['info', 'error', 'success']
-    const ws = new WebSocket('ws://demos.kaazing.com/echo')
-    this.getStatus()
+    this.getStatus(() => {
+      this.setupWsHandlers()
+    })
     setInterval(() => {
       this.now = Date.now()
     }, 1000)
-    ws.addEventListener('open', () => {
-      this.logs.unshift({
-        time: Date.now(),
-        type: 'success',
-        text: '远程日志服务连接成功！'
-      })
-      setInterval(() => {
-        ws.send(Math.random())
-      }, 2000)
-    })
-    ws.addEventListener('error', err => {
-      this.logs.unshift({
-        time: Date.now(),
-        type: 'error',
-        text: err.message
-      })
-    })
-    ws.addEventListener('message', event => {
-      const st = status[Math.floor(Math.random() * 3)]
-      switch (st) {
-        case status[1]:
-          this.fails++
-          break
-        case status[2]:
-          this.success++
-          break
-        default:
-          break
-      }
-      this.logs.unshift({
-        time: Date.now(),
-        type: st,
-        text: event.data
-      })
-    })
   }
 }
 
