@@ -94,13 +94,6 @@ export default {
     setupWsHandlers () {
       const status = ['info', 'error', 'success']
       const ws = new WebSocket(`ws://${location.host}/logs/-/type=websocket`)
-      ws.addEventListener('open', () => {
-        this.logs.unshift({
-          time: Date.now(),
-          type: 'success',
-          text: '远程日志服务连接成功！'
-        })
-      })
       ws.addEventListener('error', err => {
         this.logs.unshift({
           time: Date.now(),
