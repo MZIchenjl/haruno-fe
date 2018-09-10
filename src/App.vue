@@ -114,6 +114,7 @@ export default {
             break
         }
         res.type = status[res.type]
+        res.time = res.time * 1000
         this.logs.unshift(res)
       })
     }
