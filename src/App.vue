@@ -14,6 +14,7 @@
         <span>共运行：</span>
         <span class="value text-info">{{ totrun }}</span>
       </span>
+      <a :href="`/logs/-/type=plain?${date}`">[日志]</a>
     </div>
     <transition-group v-if="slicedLogs.length" tag="ul" id="log-list" name="log-enter">
       <log-list-item v-for="log in slicedLogs" :key="log.time" v-bind="log" />
@@ -72,6 +73,9 @@ export default {
         ret += seconds + '秒'
       }
       return ret
+    },
+    date () {
+      return moment(this.now).format('YYYY-MM-DD')
     },
     slicedLogs () {
       return this.logs.slice(0, 50)
