@@ -14,7 +14,7 @@
         <span>共运行：</span>
         <span class="value text-info">{{ totrun }}</span>
       </span>
-      <a :href="`/logs/-/type=plain?${date}`">[日志]</a>
+      <a :href="`/logs/-/type=plain?date=${date}`">[日志]</a>
     </div>
     <transition-group v-if="slicedLogs.length" tag="ul" id="log-list" name="log-enter">
       <log-list-item v-for="log in slicedLogs" :key="log.time" v-bind="log" />
