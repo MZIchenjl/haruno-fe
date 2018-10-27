@@ -17,7 +17,7 @@
       <a :href="`/logs/-/type=plain?date=${date}`">[日志]</a>
     </div>
     <transition-group v-if="slicedLogs.length" tag="ul" id="log-list" name="log-enter">
-      <log-list-item v-for="log in slicedLogs" :key="log.time" v-bind="log" />
+      <log-list-item v-for="log in slicedLogs" :key="log.time" v-bind="log"/>
     </transition-group>
     <div v-else>连接中，请稍等...</div>
   </div>
@@ -136,7 +136,7 @@ export default {
 </script>
 
 <style lang="less">
-@import "./typo.css";
-@import "./components/log-list-item/index.less";
-@import "./app.less";
+  @import "./typo.css";
+  @import "./components/log-list-item/index.less";
+  @import "./app.less";
 </style>

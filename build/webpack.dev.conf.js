@@ -12,7 +12,6 @@ const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const portfinder = require('portfinder')
 
-
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 

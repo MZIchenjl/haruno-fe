@@ -10,6 +10,7 @@
 
 <script>
 import formatTime from './formatTime'
+
 const TYPES = {
   success: '成功',
   info: '信息',
